@@ -1,0 +1,3 @@
+/media/data/master/2/MStatFreq/tps/tp1/build/CMakeFiles/rebuild_cache.dir
+/media/data/master/2/MStatFreq/tps/tp1/build/CMakeFiles/edit_cache.dir
+/media/data/master/2/MStatFreq/tps/tp1/build/CMakeFiles/tp1.dir
