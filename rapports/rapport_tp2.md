@@ -2,12 +2,12 @@
 
 Matheo Dumont p1602557
 
-You can find my source code [here on my repository](https://github.com/MatheoDumont/ImStat).
+You can find my source code [here on my repository](https://github.com/MatheoDumont/ImStat).  
 The code for this projet is located at : 
 ```
 octave/tp2.m
 ```
-If you want to run it, make sure to run `data/regression/vgg_warp_h/m`, in octave, i haven't found the right command, so i used some tricky things (in octave : right-click and run).
+If you want to run it, make sure to run `data/regression/vgg_warp_h/m`. In octave, i haven't found the right command, so i used some tricky things (in octave : right-click and run in the file browser section).
 
 ## Exercice 1 : Image registration with hand-picked pairs of points
 After building the homography between `A` and `B`, and computing the transformation
@@ -25,9 +25,11 @@ Now for the Panorama, the strong luminosity on the left is due to the accumulati
 Also, we can see, by adding those two images, that the homography does not transform well `A`, the left part is *blurry*, because `A'` and `B` does not overlap well.
 
 We could also build a bigger image that contains A transformed relatively to B, i've made an attempt, but to rebuild the entire Panorama, i should probably use an algorithm like one used for Texture Synthesis.
-
+  
+<P style="page-break-before: always">
+  
 ## Exercice 2 : Image registration with detected pairs of feature points
-I implemented the RANCAS algorithm, and used arbitrarily paremeters :
+I implemented the RANSAC algorithm, and used arbitrarily paremeters :
 * `n` is the number of pair we pick each iteration.
 * `n_iter` describe how many times we make to converge.
 
@@ -52,7 +54,9 @@ For 10 call to the implemented *RANSAC* algorithm, each image is the result usin
 ![tp2exo2](../images/tp2exo2.png)
 
 As we can see, there's globally no aberrant result, except with the fourth image were outliers creates uncoherent images.
-
+  
+<P style="page-break-before: always">
+  
 Instead of using `n_iter`, we can use a threshold that the best distance/error mustn't exceed.
 Using an arbitrarily defined threshold set at `200.0`, for 10 call again :   
 ![tp2exo22](../images/tp2exo22.png)
