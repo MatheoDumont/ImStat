@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/media/data/master/2/MStatFreq/tps/tp1/src/tp1.cpp
+/media/data/master/2/MStatFreq/tps/src/tp1.cpp
 opencv4/opencv2/core.hpp
 -
 opencv4/opencv2/highgui.hpp

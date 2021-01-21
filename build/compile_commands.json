@@ -1,7 +1,7 @@
 [
 {
-  "directory": "/media/data/master/2/MStatFreq/tps/tp1/build",
-  "command": "/usr/bin/c++   -I/media/data/master/2/MStatFreq/tps/tp1/include -isystem /usr/include/opencv4  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/tp1.dir/src/tp1.cpp.o -c /media/data/master/2/MStatFreq/tps/tp1/src/tp1.cpp",
-  "file": "/media/data/master/2/MStatFreq/tps/tp1/src/tp1.cpp"
+  "directory": "/media/data/master/2/MStatFreq/tps/build",
+  "command": "/usr/bin/c++   -I/media/data/master/2/MStatFreq/tps/include -isystem /usr/include/opencv4  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/tp1.dir/src/tp1.cpp.o -c /media/data/master/2/MStatFreq/tps/src/tp1.cpp",
+  "file": "/media/data/master/2/MStatFreq/tps/src/tp1.cpp"
 }
 ]

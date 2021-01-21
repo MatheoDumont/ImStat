@@ -44,10 +44,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /media/data/master/2/MStatFreq/tps/tp1
+CMAKE_SOURCE_DIR = /media/data/master/2/MStatFreq/tps
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /media/data/master/2/MStatFreq/tps/tp1/build
+CMAKE_BINARY_DIR = /media/data/master/2/MStatFreq/tps/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -74,14 +74,14 @@ clean: CMakeFiles/tp1.dir/clean
 CMakeFiles/tp1.dir/all:
 	$(MAKE) -f CMakeFiles/tp1.dir/build.make CMakeFiles/tp1.dir/depend
 	$(MAKE) -f CMakeFiles/tp1.dir/build.make CMakeFiles/tp1.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/data/master/2/MStatFreq/tps/tp1/build/CMakeFiles --progress-num=1,2 "Built target tp1"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/data/master/2/MStatFreq/tps/build/CMakeFiles --progress-num=1,2 "Built target tp1"
 .PHONY : CMakeFiles/tp1.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/tp1.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/data/master/2/MStatFreq/tps/tp1/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/data/master/2/MStatFreq/tps/build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/tp1.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/data/master/2/MStatFreq/tps/tp1/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/data/master/2/MStatFreq/tps/build/CMakeFiles 0
 .PHONY : CMakeFiles/tp1.dir/rule
 
 # Convenience name for target.

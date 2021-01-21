@@ -10,13 +10,24 @@
 
 cv::Mat getGaussianKernel(int, int, double, double);
 
-#define im0 "data/text0.png"
+/*
+A. Efros and T. Leung. Texture synthesis by non-parametric sampling. In Proceedings of the International
+Conference on Computer Vision Volume 2, ICCV '99, pages 10331068, Washington, DC, USA, 1999.
+IEEE Computer Society.
+*/
 
-int WIDTH = 30;
-int HEIGHT = 30;
+#define im0 "data/synthese/text0.png"
+#define im1 "data/synthese/text4.png"
 
-int WINDOW_RADIUS = 3;
-float EPSILON = 0.05f;
+// Taille de l'image synthetiser
+int WIDTH = 100;
+int HEIGHT = 100;
+
+// Parametres de l'algorithme
+// radius depuis le centre du patch, la taille est side_size(defini plus bas)
+int WINDOW_RADIUS = 1;
+// seuil autorisant le choix d'un patch plus ou moins eloigne sur meilleur(distance)
+float EPSILON = 0.f;
 
 int side_size = WINDOW_RADIUS * 2 + 1;
 
@@ -100,8 +111,9 @@ Cell pick_max_pixel(const cv::Mat &mask)
                 continue;
 
             Cell c = {i, j};
+
             int sum_neightboorhood_cell = sum_cell(mask, c);
-            if (sum_neightboorhood_cell >= max_neighboorhood)
+            if (sum_neightboorhood_cell > max_neighboorhood)
             {
                 c_max = c;
                 max_neighboorhood = sum_neightboorhood_cell;
@@ -111,68 +123,45 @@ Cell pick_max_pixel(const cv::Mat &mask)
     return c_max;
 }
 
-// float SSD_patch(const cv::Mat &Ismp, const cv::Mat &I, const cv::Mat &mask, Cell max_pixel, Cell c)
-// {
-//     float distance = 0.f;
-//     float sum_gauss = 0.f;
-
-//     for (int i = -WINDOW_RADIUS; i < WINDOW_RADIUS + 1; ++i)
-//         for (int j = -WINDOW_RADIUS; j < WINDOW_RADIUS + 1; ++j)
-//         {
-//             int row = i + max_pixel.first;
-//             int col = j + max_pixel.second;
-//             // if (row < 0 || row > mask.rows - 1 || col < 0 || col > mask.cols - 1)
-//             //     continue;
-
-//             if (mask.at<int32_t>(row, col) == 0)
-//                 continue;
-
-//             int row_smp = i + c.first;
-//             int col_smp = j + c.second;
-//             // if (row_smp < 0 || row_smp > Ismp.rows - 1 || col_smp < 0 || col_smp > Ismp.cols - 1)
-//             //     continue;
-
-//             const cv::Vec3b &a = I.at<cv::Vec3b>(row, col);
-//             const cv::Vec3b &b = Ismp.at<cv::Vec3b>(row_smp, col_smp);
-
-//             float tmp_d = 0.f;
-//             float gauss = precomputed_gaussian.at<float>(i + WINDOW_RADIUS, j + WINDOW_RADIUS);
-//             sum_gauss += gauss;
-//             for (int i = 0; i < b.channels; ++i)
-//                 tmp_d += std::pow(float(b[i]) - float(a[i]), 2) * gauss;
-
-//             distance += std::sqrt(tmp_d);
-//         }
-//     return distance / sum_gauss;
-// }
-
-float SSD_patch(const cv::Mat &patch_smp, const cv::Mat &patch_max_pixel, const cv::Mat &mask, Cell pixel_start)
+float SSD_patch(const cv::Mat &Ismp, const cv::Mat &I, const cv::Mat &mask, Cell max_pixel, Cell c)
 {
     float distance = 0.f;
     float sum_gauss = 0.f;
 
-    for (int i = 0; i < side_size; ++i)
-        for (int j = 0; j < side_size; ++j)
+    for (int i = -WINDOW_RADIUS; i < WINDOW_RADIUS + 1; ++i)
+        for (int j = -WINDOW_RADIUS; j < WINDOW_RADIUS + 1; ++j)
         {
-            int row = i + pixel_start.first;
-            int col = j + pixel_start.second;
+            int row = i + max_pixel.first;
+            int col = j + max_pixel.second;
+            // if (row < 0 || row > mask.rows - 1 || col < 0 || col > mask.cols - 1)
+            //     continue;
 
-            if (mask.at<int32_t>(row, col) == 0)
-                continue;
+            // mask_gate in {0, 1}
+            int mask_gate = mask.at<int32_t>(row, col);
+            // if (mask.at<int32_t>(row, col) == 0)
+            //     continue;
 
-            const cv::Vec3b &a = patch_max_pixel.at<cv::Vec3b>(i, j);
-            const cv::Vec3b &b = patch_smp.at<cv::Vec3b>(i, j);
+            int row_smp = i + c.first;
+            int col_smp = j + c.second;
+            // if (row_smp < 0 || row_smp > Ismp.rows - 1 || col_smp < 0 || col_smp > Ismp.cols - 1)
+            //     continue;
+
+            const cv::Vec3b &a = I.at<cv::Vec3b>(row, col);
+            const cv::Vec3b &b = Ismp.at<cv::Vec3b>(row_smp, col_smp);
 
             float tmp_d = 0.f;
-            float gauss = precomputed_gaussian.at<float>(i, j);
+            float gauss = mask_gate * precomputed_gaussian.at<float>(i + WINDOW_RADIUS, j + WINDOW_RADIUS);
             sum_gauss += gauss;
-            for (int i = 0; i < b.channels; ++i)
-                tmp_d += std::pow(float(b[i]) - float(a[i]), 2) * gauss;
 
-            distance += std::sqrt(tmp_d);
+            for (int i = 0; i < b.channels; ++i)
+                tmp_d += std::pow(float(b[i]) - float(a[i]), 2);
+
+            tmp_d *= gauss;
+            distance += tmp_d;
         }
     return distance / sum_gauss;
 }
+
 struct Node
 {
     float distance;
@@ -192,27 +181,14 @@ std::set<Node> distance_to_patchs(const cv::Mat &Ismp, const cv::Mat &I, const c
 {
     std::set<Node> nodes;
 
-    // for (int i = WINDOW_RADIUS; i < Ismp.rows - WINDOW_RADIUS; ++i)
-    //     for (int j = WINDOW_RADIUS; j < Ismp.cols - WINDOW_RADIUS; ++j)
-    //     {
-    //         Cell c = {i, j};
-    //         float distance = SSD_patch(Ismp, I, mask, max_pixel, c);
-    //         nodes.insert(Node(distance, c));
-    //     }
-    Cell start_pixel = {max_pixel.first - WINDOW_RADIUS, max_pixel.second - WINDOW_RADIUS};
-
-    cv::Rect roi_max_pixel = cv::Rect(start_pixel.first, start_pixel.second, side_size, side_size);
-    cv::Mat patch_max_pixel = cv::Mat(I, roi_max_pixel);
-
     for (int i = WINDOW_RADIUS; i < Ismp.rows - WINDOW_RADIUS; ++i)
         for (int j = WINDOW_RADIUS; j < Ismp.cols - WINDOW_RADIUS; ++j)
         {
-            cv::Rect roi = cv::Rect(i - WINDOW_RADIUS, j - WINDOW_RADIUS, side_size, side_size);
-            cv::Mat patch_smp = cv::Mat(Ismp, roi);
-
-            float distance = SSD_patch(patch_smp, patch_max_pixel, mask, start_pixel);
-            nodes.insert(Node(distance, {i, j}));
+            Cell c = {i, j};
+            float distance = SSD_patch(Ismp, I, mask, max_pixel, c);
+            nodes.insert(Node(distance, c));
         }
+
     return nodes;
 }
 
@@ -232,10 +208,12 @@ std::vector<Node> pick_patchs_under_epsilon(const std::set<Node> &nodes)
     ite_begin++;
     float higher_bound = (1.f + EPSILON) * best_distance;
 
-    for (auto ite = ite_begin; ite != nodes.end(); ite++)
+    for (auto ite = ite_begin;
+         ite != nodes.end() && ite->distance <= higher_bound;
+         ite++)
     {
-        if (ite->distance > higher_bound)
-            break;
+        // if (ite->distance > higher_bound)
+        //     break;
 
         under_epsilon.emplace_back(
             normalize01(best_distance, worst_distance, ite->distance),

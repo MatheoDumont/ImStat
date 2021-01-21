@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/media/data/master/2/MStatFreq/tps/tp1/src/tp1.cpp" "/media/data/master/2/MStatFreq/tps/tp1/build/CMakeFiles/tp1.dir/src/tp1.cpp.o"
+  "/media/data/master/2/MStatFreq/tps/src/tp1.cpp" "/media/data/master/2/MStatFreq/tps/build/CMakeFiles/tp1.dir/src/tp1.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

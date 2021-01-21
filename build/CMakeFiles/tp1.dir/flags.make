@@ -6,5 +6,5 @@ CXX_FLAGS = -O3 -DNDEBUG   -std=gnu++11
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/media/data/master/2/MStatFreq/tps/tp1/include -isystem /usr/include/opencv4 
+CXX_INCLUDES = -I/media/data/master/2/MStatFreq/tps/include -isystem /usr/include/opencv4 
 
