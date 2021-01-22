@@ -26,6 +26,39 @@ function [H] = homography(matched_pixel)
   H = H';
 endfunction
 
+function create_panorama(A, B, H)
+  # code de `vgg_warp_H')
+  [m, n, l] = size(A);
+  y = H*[[1;1;1], [1;m;1], [n;m;1] [n;1;1]];
+  y(1,:) = y(1,:)./y(3,:);
+  y(2,:) = y(2,:)./y(3,:);
+  bbox = [
+          ceil(min(y(1,:)));
+          ceil(max(y(1,:)));
+          ceil(min(y(2,:)));
+          ceil(max(y(2,:)));
+  ];
+  bbox(2) = bbox(2) + size(B, 2) / 2;
+  bbox = transpose(bbox);
+
+  Ap = vgg_warp_H(A, H, "nearest", bbox);
+  Bp = vgg_warp_H(B, eye(3), "nearest", bbox);
+  f = max(Ap, Bp);
+
+  subplot(1, 3, 1); 
+  imshow(A); 
+  
+  subplot(2, 3, 2); 
+  imshow(f); 
+  title("Panorama");
+  
+  subplot(1, 3, 3); 
+  imshow(B); 
+  
+  waitforbuttonpress;
+  close all;
+endfunction
+
 # EXERCICE 1
 # ouvrir images
 A = imread("data/regression/keble_a.jpg");
@@ -111,6 +144,8 @@ imshow(im_warped);
 subplot(233);
 imshow(B);
 
+create_panorama(A,B,H);
+
 
 # Resultat exo 1 pour comparer (a afficher avec)
 subplot(235);
@@ -133,6 +168,7 @@ for i=1:10
 endfor
 
 
+# avec panorama
 
 
 # Exercice 2 avec seuil
@@ -178,11 +214,12 @@ endfunction
 for i=1:10
   [d worthy] = RANSAC_threshold(pairofpoints, A, B);
   H = homography(worthy);
-  im_warped = vgg_warp_H(A, H);
-  im_warped = (im_warped/2 + B);
+  #im_warped = vgg_warp_H(A, H);
+  #im_warped = (im_warped/2 + B);
   #im_warped = vgg_warp_H(B, inverse(H));
-  
-  subplot(2, 5, i);
-  imshow(im_warped);
+  create_panorama(A,B,H);
+  #subplot(2, 5, i);
+  #imshow(im_warped);
   
 endfor
+create_panorama(A,B,H);

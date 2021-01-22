@@ -24,7 +24,8 @@ The resulting image is, with `A` on the left, in the middle the Panorama and `B`
 Now for the Panorama, the strong luminosity on the left is due to the accumulation of both image `A'` and `B`, although `A'` is divided.
 Also, we can see, by adding those two images, that the homography does not transform well `A`, the left part is *blurry*, because `A'` and `B` does not overlap well.
 
-We could also build a bigger image that contains A transformed relatively to B, i've made an attempt, but to rebuild the entire Panorama, i should probably use an algorithm like one used for Texture Synthesis.
+We can also build a bigger image that contains A transformed relatively to B.
+![panorama](../images/tp2panoraman.png)
   
 <P style="page-break-before: always">
   
