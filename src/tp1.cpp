@@ -87,8 +87,7 @@ int sum_cell(const cv::Mat &mask, const Cell &c)
         {
             int row = i + c.first;
             int col = j + c.second;
-            // if (row < 0 || row >= mask.rows || col < 0 || col >= mask.cols)
-            //     continue;
+
             sum += mask.at<int32_t>(row, col);
         }
 
@@ -133,18 +132,12 @@ float SSD_patch(const cv::Mat &Ismp, const cv::Mat &I, const cv::Mat &mask, Cell
         {
             int row = i + max_pixel.first;
             int col = j + max_pixel.second;
-            // if (row < 0 || row > mask.rows - 1 || col < 0 || col > mask.cols - 1)
-            //     continue;
 
             // mask_gate in {0, 1}
             int mask_gate = mask.at<int32_t>(row, col);
-            // if (mask.at<int32_t>(row, col) == 0)
-            //     continue;
 
             int row_smp = i + c.first;
             int col_smp = j + c.second;
-            // if (row_smp < 0 || row_smp > Ismp.rows - 1 || col_smp < 0 || col_smp > Ismp.cols - 1)
-            //     continue;
 
             const cv::Vec3b &a = I.at<cv::Vec3b>(row, col);
             const cv::Vec3b &b = Ismp.at<cv::Vec3b>(row_smp, col_smp);
@@ -212,9 +205,6 @@ std::vector<Node> pick_patchs_under_epsilon(const std::set<Node> &nodes)
          ite != nodes.end() && ite->distance <= higher_bound;
          ite++)
     {
-        // if (ite->distance > higher_bound)
-        //     break;
-
         under_epsilon.emplace_back(
             normalize01(best_distance, worst_distance, ite->distance),
             ite->position);
@@ -230,8 +220,6 @@ cv::Mat compute(cv::Mat Ismp)
     cv::Mat I = cv::Mat::zeros(padded_height, padded_width, CV_8UC3);
     cv::Mat mask = cv::Mat_<int32_t>::zeros(padded_height, padded_width);
 
-    std::cout << "I rows, col => "
-              << "(" << mask.rows << ", " << mask.cols << ")" << std::endl;
     if ((side_size) >= Ismp.cols || (side_size) >= Ismp.rows)
     {
         // assert("WINDOW_RADIUS*2 cannot be > to the size of the input image" &&
@@ -282,33 +270,23 @@ cv::Mat compute(cv::Mat Ismp)
         mask.at<int32_t>(max_pixel.first, max_pixel.second) = 1;
     }
 
+    // on crop pour recuperer l'image sans le padding
     cv::Rect rect = cv::Rect(WINDOW_RADIUS, WINDOW_RADIUS, WIDTH, HEIGHT);
     cv::Mat cropped = cv::Mat(I, rect);
     return cropped;
-    // return I;
 }
 
 int main()
 {
     cv::Mat Ismp = cv::imread(im0);
-    std::cout << Ismp.cols << ", " << Ismp.rows << std::endl;
-    // cv::Mat imf;
-    // Ismp.convertTo(imf, CV_32FC3);
 
-    // std::cout << cv::typeToString(Ismp.type()) << std::endl;
-
-    // std::cout << cv::typeToString(imf.type()) << std::endl;
-
-    // cv::imshow("truc", Ismp);
-    // cv::waitKey(0);
     auto cpu_start = std::chrono::high_resolution_clock::now();
     cv::Mat I = compute(Ismp);
     auto cpu_stop = std::chrono::high_resolution_clock::now();
+
     int cpu_time = std::chrono::duration_cast<std::chrono::milliseconds>(cpu_stop - cpu_start).count();
     printf("cpu  %ds %03dms\n", int(cpu_time / 1000), int(cpu_time % 1000));
 
-    // cv::imshow("truc.jpg", I);
-    // cv::waitKey(0);
-
+    // elle se retrouve dans /build
     cv::imwrite("i.jpg", I);
 }
