@@ -1,6 +1,6 @@
 # TP 2 : Regression
 
-Matheo Dumont p1602557
+Matheo Dumont p1602557  
 
 You can find my source code [here on my repository](https://github.com/MatheoDumont/ImStat).  
 The code for this projet is located at : 

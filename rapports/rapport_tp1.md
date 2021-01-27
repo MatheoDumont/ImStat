@@ -1,6 +1,9 @@
 # TP 1 : Texture Synthesis
 
-Matheo Dumont p1602557
+Matheo Dumont p1602557   
+You can find my source code [here on my repository](https://github.com/MatheoDumont/ImStat).
+  
+The repository is the same for all the TPs.
 
 ## Implementation
 

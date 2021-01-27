@@ -23,10 +23,33 @@ IEEE Computer Society.
 int WIDTH = 100;
 int HEIGHT = 100;
 
-// Parametres de l'algorithme
-// radius depuis le centre du patch, la taille est side_size(defini plus bas)
+/*
+ * Parametres de l'algorithme
+ *
+ * WINDOW_RADIUS est le radius depuis le centre du patch, la taille est side_size(defini plus bas)
+ * 
+ * Exemples :
+ * 
+ * C le centre
+ * P un pixel dans le radius
+ * 
+ * WINDOW_RADIUS = 1
+ * P P P
+ * P C P
+ * P P P
+ * 
+ * WINDOW_RADIUS = 2
+ * P P P P P
+ * P P P P P
+ * P P C P P
+ * P P P P P
+ * P P P P P
+ */
 int WINDOW_RADIUS = 1;
-// seuil autorisant le choix d'un patch plus ou moins eloigne sur meilleur(distance)
+
+/*
+ * Seuil autorisant le choix d'un patch plus ou moins eloigne sur meilleur(distance)
+ */
 float EPSILON = 0.f;
 
 int side_size = WINDOW_RADIUS * 2 + 1;
@@ -78,6 +101,9 @@ cv::Mat getGaussianKernel(int rows, int cols, double sigmax, double sigmay)
     return kernel;
 }
 
+/*
+ * Compte dans un radius de 1 autour de la Cellule c le nombre de voisin
+ */
 int sum_cell(const cv::Mat &mask, const Cell &c)
 {
     int sum = 0;
@@ -169,6 +195,10 @@ inline bool operator<(const Node &n1, const Node &n2)
 
 /*
  * Distance entre le patch centre sur max_pixel et tous les patch de cv::Mat Ismp
+ * 
+ * On utilise un set (arbre rouge noir, donc trie).
+ * Cela permet de trier a l'insertion, de connaitre la plus petite et la plus grande distance.
+ * Pas forcement la meilleure implementation mais simple.
  */
 std::set<Node> distance_to_patchs(const cv::Mat &Ismp, const cv::Mat &I, const cv::Mat &mask, const Cell &max_pixel)
 {
@@ -190,6 +220,17 @@ float normalize01(float min, float max, float x)
     return (x - min) / (max - min);
 }
 
+/*
+ * On selectionner les patchs qui verifie la propriete :
+ * 
+ * Avec w le patch dans I qu'on veut remplir,
+ * Pour un patch w(p) dans Ismp, qui possede une distance d a w,
+ * Et wbest le patch de Ismp avec la plus petite distance entre lui et w et dbest cette distance.
+ * d <= (1 + epsilon) * dbest
+ * 
+ * On normalise les distances entre 0 et 1 des Pixels qui valident la propriete.
+ * (+ simple a manipuler)
+ */
 std::vector<Node> pick_patchs_under_epsilon(const std::set<Node> &nodes)
 {
 
@@ -222,9 +263,7 @@ cv::Mat compute(cv::Mat Ismp)
 
     if ((side_size) >= Ismp.cols || (side_size) >= Ismp.rows)
     {
-        // assert("WINDOW_RADIUS*2 cannot be > to the size of the input image" &&
-        //        (WINDOW_RADIUS * 2) < Ismp.cols && (WINDOW_RADIUS * 2) < Ismp.rows);
-        std::cout << "WINDOW_RADIUS*2 cannot be > to the size of the input image" << std::endl;
+        std::cout << "WINDOW_RADIUS*2+1(side_size) cannot be > to the size of the input image" << std::endl;
         exit(1);
     }
 
